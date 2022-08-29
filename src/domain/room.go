@@ -5,7 +5,8 @@ import "errors"
 type RoomName string
 
 var (
-	ListenerAlreadyExists = errors.New("listener already exists in this room")
+	ListenerAlreadyExists      = errors.New("listener already exists in this room")
+	ListenerNotAddedInThisRoom = errors.New("listener not added in this room")
 )
 
 type Room struct {
@@ -28,26 +29,34 @@ func (r *Room) SendBroadcastMessage(sender Client, msg string) {
 	}
 }
 
-func (r *Room) AddListener(m Client) error {
-	if _, ok := r.listeners[m.GetName()]; ok {
+func (r *Room) AddListener(l Client) error {
+	if r.ListenerExists(l) {
 		return ListenerAlreadyExists
 	}
-	r.listeners[m.GetName()] = m
+	r.listeners[l.GetName()] = l
 	return nil
 }
 
-func (r *Room) RemoveListener(m Client) {
-	_, ok := r.listeners[m.GetName()]
-	if !ok {
-		return
+func (r *Room) RemoveListener(l Client) error {
+	if !r.ListenerExists(l) {
+		return ListenerNotAddedInThisRoom
 	}
-	delete(r.listeners, m.GetName())
+	delete(r.listeners, l.GetName())
+	return nil
+}
+func (r *Room) ListenerExists(l Client) bool {
+	_, ok := r.listeners[l.GetName()]
+	return ok
 }
 
-func (r *Room) GetSize() int {
+func (r *Room) GetListenSize() int {
 	return len(r.listeners)
 }
 
 func (r *Room) GetName() RoomName {
 	return r.name
+}
+
+func (r *Room) GetAuthor() Client {
+	return r.author
 }
