@@ -25,7 +25,7 @@ func CreateRoom(name RoomName, author Client) *Room {
 
 func (r *Room) SendBroadcastMessage(sender Client, msg string) {
 	for _, client := range r.listeners {
-		go client.SendMessageByRoom(sender, *r, msg)
+		go client.SendMessageFromRoom(sender, *r, msg)
 	}
 }
 

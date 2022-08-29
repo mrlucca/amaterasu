@@ -9,7 +9,7 @@ import (
 
 func simpleClientFactoryFromNickName(name domain.NickName) domain.Client {
 	c := new(net.Conn)
-	client := domain.NewClient(name, c)
+	client := domain.NewClient(name, *c)
 	return *client
 }
 
