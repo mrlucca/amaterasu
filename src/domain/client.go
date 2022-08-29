@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"amaterasu/src/mediators"
 	"bufio"
 	"net"
 	"strings"
@@ -9,18 +10,21 @@ import (
 type NickName string
 
 type Client struct {
-	name NickName
-	conn net.Conn
+	name           NickName
+	conn           net.Conn
+	clientMediator *mediators.ClientMediator
+	roomMediator   *mediators.RoomMediator
 }
 
-func NewClient(name NickName, conn net.Conn) *Client {
+func NewClient(conn net.Conn, cm *mediators.ClientMediator, rm *mediators.RoomMediator) *Client {
 	return &Client{
-		name: name,
-		conn: conn,
+		conn:           conn,
+		clientMediator: cm,
+		roomMediator:   rm,
 	}
 }
 
-func (c *Client) OnMessage() {
+func (c *Client) OnMessageHandler() {
 	for {
 		msg, err := bufio.NewReader(c.conn).ReadString('\n')
 		if err != nil {
